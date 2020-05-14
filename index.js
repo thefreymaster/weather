@@ -19,8 +19,6 @@ app.use(express.static(__dirname + '/images'));
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const defaultZones = []
-
 const defaultDB = {
     history: [
         {
@@ -47,7 +45,7 @@ const run = () => {
                 time: new Date(),
             })
             .write()
-        io.emit('speed_update', db.get('tests').value())
+        io.emit('weather_update', db.get('history').value())
         run();
 
     }, 60000);
@@ -62,11 +60,10 @@ app.get('/api/weather/history', (req, res) => {
 app.get('/api/weather/current', (req, res) => {
     console.log({ route: "/api/weather/current" })
     res.send({
-        active: true,
-        version: '1.0.0',
-        app: 'Weather',
-        uptime: `${process.uptime().toFixed(0)} seconds`,
-        ip: networkInterfaces
+        humidity: 40,
+        temperature: 91,
+        pressure: 1.2,
+        time: new Date(),
     })
 })
 
