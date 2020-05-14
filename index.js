@@ -22,14 +22,53 @@ const io = require('socket.io')(server);
 const defaultZones = []
 
 const defaultDB = {
-    zones: defaultZones,
-    calendar: [],
+    history: [
+        {
+            humidity: 40,
+            temperature: 91,
+            pressure: 1.2,
+            time: new Date(),
+        }
+    ],
     system: {
         active: true
     }
 }
 
-db.defaults(defaultDB).write()
+db.defaults(defaultDB).write();
+
+const run = () => {
+    setTimeout(() => {
+        db.get('history')
+            .push({
+                humidity: 40,
+                temperature: 91,
+                pressure: 1.2,
+                time: new Date(),
+            })
+            .write()
+        io.emit('speed_update', db.get('tests').value())
+        run();
+
+    }, 60000);
+}
+
+app.get('/api/weather/history', (req, res) => {
+    console.log({ route: "/api/weather/history" })
+    res.send(db.get('history')
+        .value())
+})
+
+app.get('/api/weather/current', (req, res) => {
+    console.log({ route: "/api/weather/current" })
+    res.send({
+        active: true,
+        version: '1.0.0',
+        app: 'Weather',
+        uptime: `${process.uptime().toFixed(0)} seconds`,
+        ip: networkInterfaces
+    })
+})
 
 app.get('/api/status', (req, res) => {
     console.log({ route: "/api/status" })
@@ -76,5 +115,6 @@ app.get('/api', (req, res) => {
 })
 
 server.listen(port, () => {
-
+    console.log('Weather Station running on :6700');
+    run();
 });
