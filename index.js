@@ -23,14 +23,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 const defaultDB = {
-    history: [
-        {
-            humidity: 40,
-            temperature: 91,
-            pressure: 1.2,
-            time: new Date(),
-        }
-    ],
+    history: [],
     system: {
         active: true
     }
