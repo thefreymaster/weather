@@ -32,9 +32,16 @@ const defaultDB = {
 db.defaults(defaultDB).write();
 
 const convertToF = (celsius) => {
-    return (celsius * (9 / 5)) + 32
+    return ((celsius * (9 / 5)) + 32).toFixed(2);
 }
 
+const getPressure = (pressure) => {
+    return (pressure / 33.864).toFixed(2);
+}
+
+const getHumidity = (humidity) => {
+    return data.humidity.toFixed(2);
+}
 const run = () => {
     setTimeout(() => {
         IMU.getValue((err, data) => {
@@ -43,13 +50,13 @@ const run = () => {
                 return;
             }
             console.log("Temp is: ", convertToF(data.temperature));
-            console.log("Pressure is: ", data.pressure / 33.864);
-            console.log("Humidity is: ", data.humidity);
+            console.log("Pressure is: ", getPressure(data.pressure));
+            console.log("Humidity is: ", getHumidity(data.humidity));
             db.get('history')
                 .push({
-                    humidity: data.humidity,
+                    humidity: getHumidity(data.humidity),
                     temperature: convertToF(data.temperature),
-                    pressure: data.pressure / 33.864,
+                    pressure: getPressure(data.pressure),
                     time: new Date(),
                 })
                 .write()
@@ -73,21 +80,21 @@ app.get('/api/weather/current', (req, res) => {
             return;
         }
         console.log("Temp is: ", convertToF(data.temperature));
-        console.log("Pressure is: ", data.pressure / 33.864);
-        console.log("Humidity is: ", data.humidity);
+        console.log("Pressure is: ", getPressure(data.pressure));
+        console.log("Humidity is: ", getHumidity(data.humidity));
         db.get('history')
             .push({
-                humidity: data.humidity,
+                humidity: getHumidity(data.humidity),
                 temperature: convertToF(data.temperature),
-                pressure: data.pressure,
+                pressure: getPressure(data.pressure),
                 time: new Date(),
             })
             .write()
         io.emit('weather_update', db.get('history').value())
         res.send({
-            humidity: data.humidity,
+            humidity: getHumidity(data.humidity),
             temperature: convertToF(data.temperature),
-            pressure: data.pressure,
+            pressure: getPressure(data.pressure),
             time: new Date(),
         });
     });
