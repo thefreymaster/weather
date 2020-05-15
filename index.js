@@ -38,34 +38,32 @@ const defaultDB = {
 
 db.defaults(defaultDB).write();
 
+const convertToF = (celsius) => {
+    return (celsius * (9 / 5)) + 32
+}
+
 const run = () => {
     setTimeout(() => {
         IMU.getValue((err, data) => {
             if (err !== null) {
-              console.error("Could not read sensor data: ", err);
-              return;
+                console.error("Could not read sensor data: ", err);
+                return;
             }
-          
-            console.log("Accelleration is: ", JSON.stringify(data.accel, null, "  "));
-            console.log("Gyroscope is: ", JSON.stringify(data.gyro, null, "  "));
-            console.log("Compass is: ", JSON.stringify(data.compass, null, "  "));
-            console.log("Fusion data is: ", JSON.stringify(data.fusionPose, null, "  "));
-          
-            console.log("Temp is: ", data.temperature);
+            console.log("Temp is: ", convertToF(data.temperature));
             console.log("Pressure is: ", data.pressure);
             console.log("Humidity is: ", data.humidity);
             db.get('history')
-            .push({
-                humidity: data.humidity,
-                temperature: data.temperature,
-                pressure: data.temperature,
-                time: new Date(),
-            })
-            .write()
-        io.emit('weather_update', db.get('history').value())
-        run();
-          });
-    }, 1000);
+                .push({
+                    humidity: data.humidity,
+                    temperature: convertToF(data.temperature),
+                    pressure: data.pressure,
+                    time: new Date(),
+                })
+                .write()
+            io.emit('weather_update', db.get('history').value())
+            run();
+        });
+    }, 10000);
 }
 
 app.get('/api/weather/history', (req, res) => {
@@ -76,12 +74,30 @@ app.get('/api/weather/history', (req, res) => {
 
 app.get('/api/weather/current', (req, res) => {
     console.log({ route: "/api/weather/current" })
-    res.send({
-        humidity: 40,
-        temperature: 91,
-        pressure: 1.2,
-        time: new Date(),
-    })
+    IMU.getValue((err, data) => {
+        if (err !== null) {
+            console.error("Could not read sensor data: ", err);
+            return;
+        }
+        console.log("Temp is: ", convertToF(data.temperature));
+        console.log("Pressure is: ", data.pressure);
+        console.log("Humidity is: ", data.humidity);
+        db.get('history')
+            .push({
+                humidity: data.humidity,
+                temperature: convertToF(data.temperature),
+                pressure: data.pressure,
+                time: new Date(),
+            })
+            .write()
+        io.emit('weather_update', db.get('history').value())
+        res.send({
+            humidity: data.humidity,
+            temperature: convertToF(data.temperature),
+            pressure: data.pressure,
+            time: new Date(),
+        });
+    });
 })
 
 app.get('/api/status', (req, res) => {
