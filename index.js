@@ -77,7 +77,7 @@ const run = () => {
             io.emit('weather_update', db.get('history').value())
             run();
         });
-    }, 10000);
+    }, 60000);
 }
 
 app.get('/api/weather/history', (req, res) => {
