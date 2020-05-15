@@ -3,7 +3,9 @@ const app = express();
 const path = require('path');
 const imu = require("node-sense-hat").Imu;
 const IMU = new imu.IMU();
+const matrix = require('node-sense-hat').Leds
 
+matrix.clear()
 
 const port = 6700;
 const low = require('lowdb');

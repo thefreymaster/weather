@@ -39,7 +39,6 @@ const Graph = ({ socket, data, yAxis, min, max, color }) => {
                     anchor: 'bottom',
                     direction: 'column',
                     justify: false,
-                    translateX: 100,
                     translateY: 0,
                     itemsSpacing: 0,
                     itemDirection: 'left-to-right',
