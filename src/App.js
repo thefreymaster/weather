@@ -25,6 +25,7 @@ function App() {
   const inline = {
     zones: {
       height: height,
+      width: window.innerWidth,
       display: 'flex',
 
     }
@@ -100,7 +101,11 @@ function App() {
     );
   }
 
-  console.log(temperature[0].data[temperature[0].data.length-1])
+  console.log(temperature[0].data[temperature[0].data.length - 1])
+
+  const currentTemp = temperature[0].data[temperature[0].data.length - 1].y;
+  const currentHumidity = humidity[0].data[humidity[0].data.length - 1].y;
+  const currentPressure = pressure[0].data[pressure[0].data.length - 1].y;
 
   return (
     <Layout>
@@ -110,19 +115,48 @@ function App() {
           <div style={{ color: "white", fontWeight: 900, marginLeft: 10 }}>SKYNET Weather Station</div>
           <div style={{ flexGrow: 1 }} />
           <div style={{ marginLeft: 10 }} />
-          <div>
+          {!isMobile && <div>
             <Typography.Text disabled>
-            {temperature[0].data[temperature[0].data.length-1].y}° | {humidity[0].data[humidity[0].data.length-1].y}% | {pressure[0].data[pressure[0].data.length-1].y} inHg</Typography.Text>
-            
-          </div>
+              {currentTemp}° | {currentHumidity}% | {currentPressure} inHg
+            </Typography.Text>
+          </div>}
         </div>
       </Header>
       <Layout>
         <Content>
           <div className="zones-container" style={inline.zones}>
-            <Graph color="#29659d" data={temperature} socket={socket} yAxis="Temperature" min={50} max={90} />
-            <Graph color="#29659d" data={humidity} socket={socket} yAxis="Humidty" min={0} max={100} />
-            <Graph color="#29659d" data={pressure} socket={socket} yAxis="Pressure" min={28} max={32} />
+            {isMobile
+              ?
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '100%', flexDirection: 'column' }}>
+
+                <Typography.Title disabled>{currentTemp}°</Typography.Title>
+                <Typography.Text disabled>Temperature</Typography.Text>
+
+                <Typography.Title disabled>{currentHumidity}%</Typography.Title>
+                <Typography.Text disabled>Humidity</Typography.Text>
+
+                <Typography.Title disabled>{currentPressure} inHg</Typography.Title>
+                <Typography.Text disabled>Pressure</Typography.Text>
+              </div>
+              :
+              <React.Fragment>
+                <div style={{ flexDirection: 'column', minWidth: '33%' }}>
+                  <Typography.Title disabled>{currentTemp}°</Typography.Title>
+                  <Typography.Text disabled>Temperature</Typography.Text>
+                  <Graph color="#29659d" data={temperature} socket={socket} yAxis="Temperature" min={50} max={90} />
+                </div>
+                <div style={{ flexDirection: 'column', minWidth: '33%' }}>
+                  <Typography.Title disabled>{currentHumidity}%</Typography.Title>
+                  <Typography.Text disabled>Humidity</Typography.Text>
+                  <Graph color="#29659d" data={humidity} socket={socket} yAxis="Humidty" min={0} max={100} />
+                </div>
+                <div style={{ flexDirection: 'column', minWidth: '33%' }}>
+                  <Typography.Title disabled>{currentPressure} inHg</Typography.Title>
+                  <Typography.Text disabled>Pressure</Typography.Text>
+                  <Graph color="#29659d" data={pressure} socket={socket} yAxis="Pressure" min={28} max={32} />
+                </div>
+              </React.Fragment>
+            }
           </div>
         </Content>
       </Layout>
