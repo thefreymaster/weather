@@ -43,13 +43,13 @@ const run = () => {
                 return;
             }
             console.log("Temp is: ", convertToF(data.temperature));
-            console.log("Pressure is: ", data.pressure);
+            console.log("Pressure is: ", data.pressure / 25.4);
             console.log("Humidity is: ", data.humidity);
             db.get('history')
                 .push({
                     humidity: data.humidity,
                     temperature: convertToF(data.temperature),
-                    pressure: data.pressure,
+                    pressure: data.pressure / 25.4,
                     time: new Date(),
                 })
                 .write()
@@ -73,7 +73,7 @@ app.get('/api/weather/current', (req, res) => {
             return;
         }
         console.log("Temp is: ", convertToF(data.temperature));
-        console.log("Pressure is: ", data.pressure);
+        console.log("Pressure is: ", data.pressure / 25.4);
         console.log("Humidity is: ", data.humidity);
         db.get('history')
             .push({
