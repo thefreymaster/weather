@@ -36,7 +36,7 @@ const Graph = ({ socket, data, yAxis, min, max, color }) => {
             crosshairType="cross"
             legends={[
                 {
-                    anchor: 'bottom',
+                    anchor: 'bottom-right',
                     direction: 'column',
                     justify: false,
                     translateY: 0,
