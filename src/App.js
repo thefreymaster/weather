@@ -12,24 +12,70 @@ import axios from 'axios'
 
 const { Header, Footer, Sider, Content } = Layout;
 
-const socket = io('http://localhost:9700/');
+const socket = io('http://192.168.124.22:6700/');
 
 
 function App() {
-  const [testing, setTesting] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [height, setHeight] = React.useState(window.innerHeight - 129);
+  const [temperature, setTemperature] = React.useState([]);
+  const [humidy, setHumidy] = React.useState([]);
+  const [pressure, setPressure] = React.useState([]);
 
-  const [height, setHeight] = React.useState(window.innerHeight - 129)
   const inline = {
     zones: {
       height: height,
-      flexWrap: "wrap"
+      display: 'flex',
+
     }
   }
+
   React.useLayoutEffect(() => {
-    axios.get('/api/speed/status')
+    socket.on('weather_update', (data) => {
+      setTemperature([
+        {
+          id: "temperature",
+          color: "hsl(57, 70%, 50%)",
+          data: data.temperature,
+        },
+      ]);
+      setHumidy([
+        {
+          id: "humidy",
+          color: "hsl(266, 70%, 50%)",
+          data: data.humidity,
+        },
+      ]);
+      setPressure([
+        {
+          id: "pressure",
+          color: "hsl(135, 70%, 50%)",
+          data: data.pressure,
+        }
+      ]);
+    })
+    axios.get('/api/weather/history')
       .then(response => {
-        setTesting(response.data)
+        setTemperature([
+          {
+            id: "temperature",
+            color: "hsl(57, 70%, 50%)",
+            data: response.data.temperature,
+          },
+        ]);
+        setHumidy([
+          {
+            id: "humidy",
+            color: "hsl(266, 70%, 50%)",
+            data: response.data.humidity,
+          },
+        ]);
+        setPressure([
+          {
+            id: "pressure",
+            color: "hsl(135, 70%, 50%)",
+            data: response.data.pressure,
+          }
+        ]);
       })
       .catch(function (error) {
         // handle error
@@ -40,45 +86,6 @@ function App() {
   window.addEventListener('resize', () => {
     setHeight(window.innerHeight - 129)
   })
-
-  const start = () => {
-    setLoading(true)
-    axios.get('/api/speed/start')
-      .then(response => {
-        setTesting(true)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-  }
-
-  const stop = () => {
-    setLoading(true)
-    axios.get('/api/speed/stop')
-      .then(response => {
-        setTesting(false)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-  }
-
-  const clear = () => {
-    setLoading(true)
-    axios.get('/api/speed/clear')
-      .then(response => {
-        setTesting(false)
-        setLoading(false)
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      })
-  }
 
   return (
     <Layout>
@@ -93,7 +100,9 @@ function App() {
       <Layout>
         <Content>
           <div className="zones-container" style={inline.zones}>
-            <Graph socket={socket} />
+            <Graph color="#29659d" data={temperature} socket={socket} yAxis="Temperature" min={50} max={90} />
+            <Graph color="#29659d" data={humidy} socket={socket} yAxis="Humidty" min={0} max={100} />
+            <Graph color="#29659d" data={pressure} socket={socket} yAxis="Pressure" min={28} max={32} />
           </div>
         </Content>
       </Layout>

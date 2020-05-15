@@ -50,5 +50,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:6700/"
+  "proxy": "http://192.168.124.22:6700/"
 }
