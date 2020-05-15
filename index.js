@@ -144,5 +144,31 @@ app.get('/api', (req, res) => {
 
 server.listen(port, () => {
     console.log('Weather Station running on :6700');
-    run();
+    IMU.getValue((err, data) => {
+        if (err !== null) {
+            console.error("Could not read sensor data: ", err);
+            return;
+        }
+        console.log("Temp is: ", convertToF(data.temperature));
+        console.log("Pressure is: ", getPressure(data.pressure));
+        console.log("Humidity is: ", getHumidity(data.humidity));
+        const now = new Date();
+        db.get('history.temperature')
+            .push({
+                x: now,
+                y: convertToF(data.temperature),
+            }).write();
+        db.get('history.humidity')
+            .push({
+                x: now,
+                y: getHumidity(data.humidity),
+            }).write();
+        db.get('history.pressure')
+            .push({
+                x: now,
+                y: getPressure(data.pressure),
+            }).write()
+        io.emit('weather_update', db.get('history').value())
+        run();
+    });
 });
