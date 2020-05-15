@@ -40,7 +40,7 @@ const getPressure = (pressure) => {
 }
 
 const getHumidity = (humidity) => {
-    return data.humidity.toFixed(2);
+    return humidity.toFixed(2);
 }
 const run = () => {
     setTimeout(() => {
