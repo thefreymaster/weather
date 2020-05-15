@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
-const path = require('path')
+const path = require('path');
+const imu = require("node-sense-hat").Imu;
+const IMU = new imu.IMU();
+
 
 const port = 6700;
 const low = require('lowdb');
@@ -37,17 +40,31 @@ db.defaults(defaultDB).write();
 
 const run = () => {
     setTimeout(() => {
-        db.get('history')
+        IMU.getValue((err, data) => {
+            if (err !== null) {
+              console.error("Could not read sensor data: ", err);
+              return;
+            }
+          
+            console.log("Accelleration is: ", JSON.stringify(data.accel, null, "  "));
+            console.log("Gyroscope is: ", JSON.stringify(data.gyro, null, "  "));
+            console.log("Compass is: ", JSON.stringify(data.compass, null, "  "));
+            console.log("Fusion data is: ", JSON.stringify(data.fusionPose, null, "  "));
+          
+            console.log("Temp is: ", data.temperature);
+            console.log("Pressure is: ", data.pressure);
+            console.log("Humidity is: ", data.humidity);
+            db.get('history')
             .push({
-                humidity: 40,
-                temperature: 91,
-                pressure: 1.2,
+                humidity: data.humidity,
+                temperature: data.temperature,
+                pressure: data.temperature,
                 time: new Date(),
             })
             .write()
         io.emit('weather_update', db.get('history').value())
         run();
-
+          });
     }, 60000);
 }
 
