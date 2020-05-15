@@ -1,0 +1,10 @@
+{
+  "history": {
+    "humidity": [],
+    "temperature": [],
+    "pressure": []
+  },
+  "system": {
+    "active": true
+  }
+}

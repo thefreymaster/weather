@@ -65,12 +65,12 @@ const run = () => {
             db.get('history.humidity')
                 .push({
                     x: now,
-                    y: convertToF(data.humidity),
+                    y: getHumidity(data.humidity),
                 }).write();
             db.get('history.pressure')
                 .push({
                     x: now,
-                    y: convertToF(data.pressure),
+                    y: getPressure(data.pressure),
                 }).write()
             io.emit('weather_update', db.get('history').value())
             run();

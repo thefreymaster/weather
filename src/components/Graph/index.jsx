@@ -18,7 +18,7 @@ const Graph = ({ socket }) => {
             .then(response => {
                 setWeather([
                     {
-                        id: "Speed weather",
+                        id: "Weather",
                         data: response.data
                     }
                 ])
