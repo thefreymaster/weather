@@ -23,7 +23,11 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 const defaultDB = {
-    history: [],
+    history: {
+        humidity: [],
+        temperature: [],
+        pressure: [],
+    },
     system: {
         active: true
     }
@@ -52,14 +56,22 @@ const run = () => {
             console.log("Temp is: ", convertToF(data.temperature));
             console.log("Pressure is: ", getPressure(data.pressure));
             console.log("Humidity is: ", getHumidity(data.humidity));
-            db.get('history')
+            const now = new Date();
+            db.get('history.temperature')
                 .push({
-                    humidity: getHumidity(data.humidity),
-                    temperature: convertToF(data.temperature),
-                    pressure: getPressure(data.pressure),
-                    time: new Date(),
-                })
-                .write()
+                    x: now,
+                    y: convertToF(data.temperature),
+                }).write();
+            db.get('history.humidity')
+                .push({
+                    x: now,
+                    y: convertToF(data.humidity),
+                }).write();
+            db.get('history.pressure')
+                .push({
+                    x: now,
+                    y: convertToF(data.pressure),
+                }).write()
             io.emit('weather_update', db.get('history').value())
             run();
         });
