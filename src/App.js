@@ -143,17 +143,17 @@ function App() {
                 <div style={{ flexDirection: 'column', minWidth: '33%' }}>
                   <Typography.Title disabled>{currentTemp}°</Typography.Title>
                   <Typography.Text disabled>Temperature</Typography.Text>
-                  <Graph color="#29659d" data={temperature} socket={socket} yAxis="Temperature" min={50} max={90} />
+                  <Graph suffix="°" color="#29659d" data={temperature} socket={socket} yAxis="Temperature" min={50} max={90} />
                 </div>
                 <div style={{ flexDirection: 'column', minWidth: '33%' }}>
                   <Typography.Title disabled>{currentHumidity}%</Typography.Title>
                   <Typography.Text disabled>Humidity</Typography.Text>
-                  <Graph color="#29659d" data={humidity} socket={socket} yAxis="Humidty" min={0} max={100} />
+                  <Graph suffix="%" color="#29659d" data={humidity} socket={socket} yAxis="Humidty" min={0} max={100} />
                 </div>
                 <div style={{ flexDirection: 'column', minWidth: '33%' }}>
                   <Typography.Title disabled>{currentPressure} inHg</Typography.Title>
                   <Typography.Text disabled>Pressure</Typography.Text>
-                  <Graph color="#29659d" data={pressure} socket={socket} yAxis="Pressure" min={28} max={32} />
+                  <Graph suffix=" inHg" color="#29659d" data={pressure} socket={socket} yAxis="Pressure" min={28} max={32} />
                 </div>
               </React.Fragment>
             }

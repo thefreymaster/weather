@@ -3,7 +3,7 @@ import axios from 'axios'
 import { ResponsiveLine } from '@nivo/line'
 
 
-const Graph = ({ socket, data, yAxis, min, max, color }) => {
+const Graph = ({ socket, data, yAxis, min, max, color, suffix }) => {
     return (
         <ResponsiveLine
             data={data}
@@ -23,6 +23,14 @@ const Graph = ({ socket, data, yAxis, min, max, color }) => {
                 legendPosition: 'middle'
             }}
             enableGridY={false}
+            xFormat={(data) => {
+                const date = new Date(data);
+                const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return date.toLocaleDateString() + ' ' + time;
+            }}
+            yFormat={(data) => {
+                return data + suffix
+            }}
             colors={[color]}
             pointSize={6}
             enablePoints={false}
