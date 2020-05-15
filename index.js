@@ -84,30 +84,14 @@ app.get('/api', (req, res) => {
             description: "Get the status of the server",
             route: "/api/status"
         },
-        zones: {
+        weather: {
             description: "Get the status of all zones",
-            route: "/api/zones",
-            on: {
-                description: "Turn all zones on",
+            route: "/api/weather",
+            history: {
+                description: "Get historic weather data",
                 route: "/api/zones/on",
             },
-            off: {
-                description: "Turn all zones off",
-                route: "/api/zones/off",
-            }
         },
-        zone: {
-            description: "Get the status of one zone",
-            route: "/api/zone/:zone_id",
-            on: {
-                description: "Set a zone to active",
-                route: "/api/zone/on/:zone_id"
-            },
-            off: {
-                description: "Set a zone to inactive",
-                route: "/api/zone/off/:zone_id"
-            }
-        }
     })
 })
 
