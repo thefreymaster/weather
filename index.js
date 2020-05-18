@@ -80,9 +80,12 @@ const run = () => {
     }, 60000);
 }
 
+const oneday = 60 * 60 * 24 * 1000
+
 app.get('/api/weather/history', (req, res) => {
     console.log({ route: "/api/weather/history" })
     res.send(db.get('history')
+        .filter((item) => new Date(item.x).getTime() - new Date().getTime() < oneday)
         .value())
 })
 

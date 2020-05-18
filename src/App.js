@@ -10,6 +10,7 @@ import { isMobile } from 'react-device-detect';
 import Graph from './components/Graph';
 import axios from 'axios'
 import Loader from 'react-loader-spinner'
+import FullPage from './components/common/FullPage';
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -91,13 +92,15 @@ function App() {
 
   if (temperature.length === 0 || humidity.length === 0 || pressure.length === 0) {
     return (
-      <Loader
-        type="Puff"
-        color="#00BFFF"
-        height={100}
-        width={100}
-        timeout={10000} //3 secs
-      />
+      <FullPage>
+        <Loader
+          type="Puff"
+          color="#00BFFF"
+          height={100}
+          width={100}
+          timeout={10000} //3 secs
+        />
+      </FullPage>
     );
   }
 
@@ -139,23 +142,31 @@ function App() {
                 <Typography.Text disabled>Pressure</Typography.Text>
               </div>
               :
-              <React.Fragment>
-                <div style={{ flexDirection: 'column', minWidth: '33%' }}>
-                  <Typography.Title disabled>{currentTemp}°</Typography.Title>
-                  <Typography.Text disabled>Temperature</Typography.Text>
-                  <Graph suffix="°" color="#29659d" data={temperature} socket={socket} yAxis="Temperature" min={50} max={90} />
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: '100%' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', minWidth: '100%' }}>
+                  <div style={{ flexDirection: 'column', minWidth: '33%' }}>
+                    <div style={{ padding: 10 }}>
+                      <Typography.Title disabled>{currentTemp}°</Typography.Title>
+                      <Typography.Text disabled>Temperature</Typography.Text>
+                    </div>
+                    <Graph suffix="°" color="#29659d" data={temperature} socket={socket} yAxis="Temperature" min={50} max={90} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', minWidth: '33%' }}>
+                    <div style={{ padding: 10 }}>
+                      <Typography.Title disabled>{currentHumidity}%</Typography.Title>
+                      <Typography.Text disabled>Humidity</Typography.Text>
+                    </div>
+                    <Graph suffix="%" color="#29659d" data={humidity} socket={socket} yAxis="Humidty" min={0} max={100} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', minWidth: '33%' }}>
+                    <div style={{ padding: 10 }}>
+                      <Typography.Title disabled>{currentPressure} inHg</Typography.Title>
+                      <Typography.Text disabled>Pressure</Typography.Text>
+                    </div>
+                    <Graph suffix=" inHg" color="#29659d" data={pressure} socket={socket} yAxis="Pressure" min={28} max={32} />
+                  </div>
                 </div>
-                <div style={{ flexDirection: 'column', minWidth: '33%' }}>
-                  <Typography.Title disabled>{currentHumidity}%</Typography.Title>
-                  <Typography.Text disabled>Humidity</Typography.Text>
-                  <Graph suffix="%" color="#29659d" data={humidity} socket={socket} yAxis="Humidty" min={0} max={100} />
-                </div>
-                <div style={{ flexDirection: 'column', minWidth: '33%' }}>
-                  <Typography.Title disabled>{currentPressure} inHg</Typography.Title>
-                  <Typography.Text disabled>Pressure</Typography.Text>
-                  <Graph suffix=" inHg" color="#29659d" data={pressure} socket={socket} yAxis="Pressure" min={28} max={32} />
-                </div>
-              </React.Fragment>
+              </div>
             }
           </div>
         </Content>
