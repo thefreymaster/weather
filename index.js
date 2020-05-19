@@ -74,7 +74,20 @@ const run = () => {
                     x: now,
                     y: getPressure(data.pressure),
                 }).write()
-            io.emit('weather_update', db.get('history').value())
+            const temperature = db.get('history.temperature')
+                .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+                .value();
+            const humidity = db.get('history.humidity')
+                .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+                .value()
+            const pressure = db.get('history.pressure')
+                .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+                .value()
+            io.emit('weather_update', {
+                temperature,
+                humidity,
+                pressure
+            })
             run();
         });
     }, 300000);
@@ -83,20 +96,38 @@ const run = () => {
 const threedays = 60 * 60 * 24 * 1000 * 3;
 
 app.get('/api/weather/history', (req, res) => {
-    const temperature = db.get('history.temperature')
-        .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
-        .value();
-    const humidity = db.get('history.humidity')
-        .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
-        .value()
-    const pressure = db.get('history.pressure')
-        .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
-        .value()
-    res.send({
-        temperature,
-        humidity,
-        pressure,
-    })
+    IMU.getValue((err, data) => {
+        if (err !== null) {
+            console.error("Could not read sensor data: ", err);
+            return;
+        }
+        console.log("Temp is: ", convertToF(data.temperature));
+        console.log("Pressure is: ", getPressure(data.pressure));
+        console.log("Humidity is: ", getHumidity(data.humidity));
+        db.get('history')
+            .push({
+                humidity: getHumidity(data.humidity),
+                temperature: convertToF(data.temperature),
+                pressure: getPressure(data.pressure),
+                time: new Date(),
+            })
+            .write()
+        // io.emit('weather_update', db.get('history').value())
+        const temperature = db.get('history.temperature')
+            .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+            .value();
+        const humidity = db.get('history.humidity')
+            .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+            .value()
+        const pressure = db.get('history.pressure')
+            .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+            .value()
+        res.send({
+            temperature,
+            humidity,
+            pressure,
+        })
+    });
 })
 
 app.get('/api/weather/current', (req, res) => {
