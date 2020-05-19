@@ -77,16 +77,26 @@ const run = () => {
             io.emit('weather_update', db.get('history').value())
             run();
         });
-    }, 60000);
+    }, 300000);
 }
 
-const oneday = 60 * 60 * 24 * 1000
+const threedays = 60 * 60 * 24 * 1000 * 3;
 
 app.get('/api/weather/history', (req, res) => {
-    console.log({ route: "/api/weather/history" })
-    res.send(db.get('history')
-        .filter((item) => new Date(item.x).getTime() - new Date().getTime() < oneday)
-        .value())
+    const temperature = db.get('history.temperature')
+        .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+        .value();
+    const humidity = db.get('history.humidity')
+        .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+        .value()
+    const pressure = db.get('history.pressure')
+        .filter(item => new Date().getTime() - new Date(item.x).getTime() < threedays)
+        .value()
+    res.send({
+        temperature,
+        humidity,
+        pressure,
+    })
 })
 
 app.get('/api/weather/current', (req, res) => {
@@ -139,7 +149,7 @@ app.get('/api', (req, res) => {
             route: "/api/weather",
             history: {
                 description: "Get historic weather data",
-                route: "/api/zones/on",
+                route: "/api/weather/history",
             },
         },
     })
